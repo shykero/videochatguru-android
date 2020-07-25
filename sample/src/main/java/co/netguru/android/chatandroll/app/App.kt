@@ -5,8 +5,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.support.v4.app.NotificationManagerCompat
-import android.support.v7.app.AppCompatDelegate
+import androidx.core.app.NotificationManagerCompat
+import androidx.appcompat.app.AppCompatDelegate
 import android.widget.Toast
 import co.netguru.videochatguru.disableWebRtcLogs
 import co.netguru.videochatguru.enableInternalWebRtclogs

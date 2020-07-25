@@ -10,7 +10,8 @@
 
     <application
         android:name="co.netguru.android.chatandroll.app.App"
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -19,9 +20,6 @@
         <activity
             android:name="co.netguru.android.chatandroll.feature.main.MainActivity"
             android:theme="@style/SplashTheme">
-        </activity>
-
-        <activity android:name=".feature.entry.EntryActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,11 +27,15 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".feature.entry.EntryActivity">
+        </activity>
+
         <activity android:name=".feature.login.LoginActivity" />
         <activity android:name=".feature.error.ErrorActivity" />
         <activity android:name=".feature.editcontact.EditContactActivity" />
         <activity android:name=".feature.verification.VerificationActivity" />
         <activity android:name=".feature.hangup.HangUpActivity"/>
+        <activity android:name=".feature.userlist.UsersListActivity"/>
 
         <service
             android:name="co.netguru.android.chatandroll.webrtc.service.WebRtcService"

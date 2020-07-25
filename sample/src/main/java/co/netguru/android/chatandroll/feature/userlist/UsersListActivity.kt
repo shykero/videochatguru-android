@@ -2,12 +2,16 @@ package co.netguru.android.chatandroll.feature.userlist
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
+import android.widget.AdapterView
 import co.netguru.android.chatandroll.R
 import co.netguru.android.chatandroll.data.firebase.ContactData
+import co.netguru.android.chatandroll.data.firebase.FirebaseData
+import co.netguru.android.chatandroll.data.firebase.FirebaseData.myID
 import co.netguru.android.chatandroll.feature.editcontact.EditContactActivity
 import co.netguru.android.chatandroll.feature.hangup.HangUpActivity
 import com.google.firebase.database.DataSnapshot
@@ -55,31 +59,24 @@ class UsersListActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-//
-//        contactsList.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-//            Log.w("TAG", "clicked: " + adapter.getItem(position))
-//            startVideoCall(adapter.getItem(position)!!.first)
-//        }
+        FirebaseData.init()
 
-
-//        FirebaseData.init()
-
-//        callRef = FirebaseData.database.getReference("calls/$myID/id")
+        callRef = FirebaseData.database.getReference("calls/$myID/id")
     }
 
 
     override fun onResume() {
         super.onResume()
-//        callRef.addValueEventListener(callListener)
-//        val usersRef = FirebaseData.database.getReference("users/$myID/contacts")
-//        usersRef.addValueEventListener(usersListener)
+        callRef.addValueEventListener(callListener)
+        val usersRef = FirebaseData.database.getReference("users/$myID/contacts")
+        usersRef.addValueEventListener(usersListener)
     }
 
     override fun onPause() {
         super.onPause()
-//        callRef.removeEventListener(callListener)
-//        val usersRef = FirebaseData.database.getReference("users/$myID/contacts")
-//        usersRef.addValueEventListener(usersListener)
+        callRef.removeEventListener(callListener)
+        val usersRef = FirebaseData.database.getReference("users/$myID/contacts")
+        usersRef.addValueEventListener(usersListener)
     }
 
     private fun startVideoCall(key: String, phoneNumber: String?, firstname: String?, surname: String?, profileImageUrl: String?) {
@@ -139,7 +136,7 @@ class UsersListActivity : AppCompatActivity() {
             }
             var count = 0
             dataSnapshot.children.forEach {
-//                if (it.exists() && it.key != myID)
+                if (it.exists() && it.key != myID)
                     adapter.add(Pair(it.key, it.getValue(ContactData::class.java)!!))
                 count++
             }

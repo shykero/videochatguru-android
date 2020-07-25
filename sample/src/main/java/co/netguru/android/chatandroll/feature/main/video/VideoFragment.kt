@@ -9,8 +9,8 @@ import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.os.Bundle
 import android.os.IBinder
-import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.Snackbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import com.google.android.material.snackbar.Snackbar
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import co.netguru.android.chatandroll.R
@@ -20,6 +20,7 @@ import co.netguru.android.chatandroll.common.extension.startAppSettings
 import co.netguru.android.chatandroll.feature.base.BaseMvpFragment
 import co.netguru.android.chatandroll.webrtc.service.WebRtcService
 import co.netguru.android.chatandroll.webrtc.service.WebRtcServiceListener
+import kotlinx.android.synthetic.main.fragment_video.*
 import org.webrtc.PeerConnection
 import timber.log.Timber
 
@@ -50,32 +51,32 @@ class VideoFragment : BaseMvpFragment<VideoFragmentView, VideoFragmentPresenter>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        (buttonPanel.layoutParams as CoordinatorLayout.LayoutParams).behavior = MoveUpBehavior()
-//        (localVideoView.layoutParams as CoordinatorLayout.LayoutParams).behavior = MoveUpBehavior()
-//        activity?.volumeControlStream = AudioManager.STREAM_VOICE_CALL
-//
-//        if (savedInstanceState?.getBoolean(KEY_IN_CHAT) == true) {
-//            initAlreadyRunningConnection()
-//        }
-//        connectButton.setOnClickListener {
-//            checkPermissionsAndConnect()
-//        }
-//
-//        disconnectButton.setOnClickListener {
-//            getPresenter().disconnectByUser()
-//        }
-//
-//        switchCameraButton.setOnClickListener {
-//            service?.switchCamera()
-//        }
-//
-//        cameraEnabledToggle.setOnCheckedChangeListener { _, enabled ->
-//            service?.enableCamera(enabled)
-//        }
-//
-//        microphoneEnabledToggle.setOnCheckedChangeListener { _, enabled ->
-//            service?.enableMicrophone(enabled)
-//        }
+        (buttonPanel.layoutParams as CoordinatorLayout.LayoutParams).behavior = MoveUpBehavior()
+        (localVideoView.layoutParams as CoordinatorLayout.LayoutParams).behavior = MoveUpBehavior()
+        activity?.volumeControlStream = AudioManager.STREAM_VOICE_CALL
+
+        if (savedInstanceState?.getBoolean(KEY_IN_CHAT) == true) {
+            initAlreadyRunningConnection()
+        }
+        connectButton.setOnClickListener {
+            checkPermissionsAndConnect()
+        }
+
+        disconnectButton.setOnClickListener {
+            getPresenter().disconnectByUser()
+        }
+
+        switchCameraButton.setOnClickListener {
+            service?.switchCamera()
+        }
+
+        cameraEnabledToggle.setOnCheckedChangeListener { _, enabled ->
+            service?.enableCamera(enabled)
+        }
+
+        microphoneEnabledToggle.setOnCheckedChangeListener { _, enabled ->
+            service?.enableMicrophone(enabled)
+        }
     }
 
     override fun onStart() {
@@ -100,9 +101,9 @@ class VideoFragment : BaseMvpFragment<VideoFragmentView, VideoFragmentPresenter>
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-//        if (remoteVideoView.visibility == View.VISIBLE) {
-//            outState.putBoolean(KEY_IN_CHAT, true)
-//        }
+        if (remoteVideoView.visibility == View.VISIBLE) {
+            outState.putBoolean(KEY_IN_CHAT, true)
+        }
     }
 
     override fun onDestroy() {
@@ -169,17 +170,17 @@ class VideoFragment : BaseMvpFragment<VideoFragmentView, VideoFragmentPresenter>
     }
 
     override fun showCamViews() {
-//        buttonPanel.visibility = View.VISIBLE
-//        remoteVideoView.visibility = View.VISIBLE
-//        localVideoView.visibility = View.VISIBLE
-//        connectButton.visibility = View.GONE
+        buttonPanel.visibility = View.VISIBLE
+        remoteVideoView.visibility = View.VISIBLE
+        localVideoView.visibility = View.VISIBLE
+        connectButton.visibility = View.GONE
     }
 
     override fun showStartRouletteView() {
-//        buttonPanel.visibility = View.GONE
-//        remoteVideoView.visibility = View.GONE
-//        localVideoView.visibility = View.GONE
-//        connectButton.visibility = View.VISIBLE
+        buttonPanel.visibility = View.GONE
+        remoteVideoView.visibility = View.GONE
+        localVideoView.visibility = View.GONE
+        connectButton.visibility = View.VISIBLE
     }
 
     @SuppressLint("Range")
@@ -198,17 +199,17 @@ class VideoFragment : BaseMvpFragment<VideoFragmentView, VideoFragmentPresenter>
     }
 
     override fun hideConnectButtonWithAnimation() {
-//        connectButton.animate().scaleX(0f).scaleY(0f)
-//                .setInterpolator(OvershootInterpolator())
-//                .setDuration(CONNECT_BUTTON_ANIMATION_DURATION_MS)
-//                .withStartAction { connectButton.isClickable = false }
-//                .withEndAction {
-//                    connectButton.isClickable = true
-//                    connectButton.visibility = View.GONE
-//                    connectButton.scaleX = 1f
-//                    connectButton.scaleY = 1f
-//                }
-//                .start()
+        connectButton.animate().scaleX(0f).scaleY(0f)
+                .setInterpolator(OvershootInterpolator())
+                .setDuration(CONNECT_BUTTON_ANIMATION_DURATION_MS)
+                .withStartAction { connectButton.isClickable = false }
+                .withEndAction {
+                    connectButton.isClickable = true
+                    connectButton.visibility = View.GONE
+                    connectButton.scaleX = 1f
+                    connectButton.scaleY = 1f
+                }
+                .start()
     }
 
     @SuppressLint("Range")
@@ -270,17 +271,17 @@ class VideoFragment : BaseMvpFragment<VideoFragmentView, VideoFragmentPresenter>
     }
 
     private fun onWebRtcServiceConnected(service: WebRtcService) {
-//        Timber.d("Service connected")
-//        this.service = service
-//        service.attachLocalView(localVideoView)
-//        service.attachRemoteView(remoteVideoView)
+        Timber.d("Service connected")
+        this.service = service
+        service.attachLocalView(localVideoView)
+        service.attachRemoteView(remoteVideoView)
         syncButtonsState(service)
         service.attachServiceActionsListener(webRtcServiceListener = this)
     }
 
     private fun syncButtonsState(service: WebRtcService) {
-//        cameraEnabledToggle.isChecked = service.isCameraEnabled()
-//        microphoneEnabledToggle.isChecked = service.isMicrophoneEnabled()
+        cameraEnabledToggle.isChecked = service.isCameraEnabled()
+        microphoneEnabledToggle.isChecked = service.isMicrophoneEnabled()
     }
 
     private fun onWebRtcServiceDisconnected() {
