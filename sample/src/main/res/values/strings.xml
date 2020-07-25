@@ -1,5 +1,18 @@
 <resources>
-    <string name="app_name">Chat&amp;Roll</string>
+    <string name="app_name">Videofon</string>
+
+    //Login screen
+    <string name="enter_phone_number">Bitte trage deine Handynummer ein</string>
+    <string name="login_screen_sibtitle">Wir senden einen Code, um ihr Telefon zu Überprüfen</string>
+    <string name="send_code">SMS Code senden</string>
+    <string name="german_code">+49</string>
+
+    //Verification screen
+    <string name="verify_code">SMS Code eintragen</string>
+    <string name="code_sent">Code erneut senden</string>
+
+
+
     <string name="leak_canary_display_activity_label">Chat&amp;Roll leaks</string>
 
     <string name="error_choosing_random_partner">Error occurred while choosing random partner try again later</string>
@@ -24,4 +37,28 @@
     <string name="background_work_notification_channel_description">Warns about app working in the background</string>
     <string name="ongoing_call_notification_title">Chat&amp;Roll is running</string>
     <string name="ongoing_call_notification_text">Video chat call is still running in the background</string>
+
+
+
+    <!-- Auth UI -->
+    <string name="unknown_response">Unexpected onActivityResult response code</string>
+    <string name="unknown_sign_in_response">Unknown response from AuthUI sign-in</string>
+    <string name="sign_in_cancelled">Sign in cancelled</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="unknown_error">An unknown error occurred</string>
+    <string name="contact_list">Contacts list</string>
+    <string name="contacts_lbl">Deine Kontakte</string>
+    <string name="empty_contacts">Sie haben keine Kontakte hinzugefügt</string>
+    <string name="add_contact">Contact hinzufügen</string>
+    <string name="edit_contact">Contact bearbeiten</string>
+    <string name="username">Vorname</string>
+    <string name="surname">Nachname</string>
+    <string name="save">Speichern</string>
+    <string name="delete">Löschen</string>
+    <string name="back">Zurück</string>
+    <string name="error_not_installed">Nicht möglich empfänger hat videofon app noch nicht installiert</string>
+    <string name="change_image">Bild ändern</string>
+    <string name="add_image">Bild hinzufügen</string>
+
+
 </resources>

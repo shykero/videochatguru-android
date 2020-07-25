@@ -19,8 +19,8 @@
     <dimen name="button_start_width">140dp</dimen>
     <dimen name="rounded_button_radius">40dp</dimen>
     <dimen name="splash_screen_vertical_margin">140dp</dimen>
-    <dimen name="local_video_width">60dp</dimen>
-    <dimen name="local_video_height">100dp</dimen>
+    <dimen name="local_video_width">120dp</dimen>
+    <dimen name="local_video_height">200dp</dimen>
     <dimen name="circle_button_size">64dp</dimen>
     <dimen name="toggle_button_min_size">0dp</dimen>
 </resources>

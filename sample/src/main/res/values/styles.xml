@@ -1,6 +1,33 @@
 <resources>
 
-    <style name="AppTheme" parent="AppTheme.Base"/>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="NumberButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textSize">40sp</item>
+        <item name="android:layout_height">65dp</item>
+        <item name="android:layout_width">100dp</item>
+        <item name="android:fontFamily">@font/circular_std_book</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:foreground">?android:attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="VerificationCodeNumber" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textSize">40sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/rounded_bg</item>
+    </style>
 
     <style name="AppTheme.Base" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/primary</item>

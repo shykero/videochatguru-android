@@ -3,11 +3,39 @@
     <color name="primary">#61A7F3</color>
     <color name="primary_dark">#1D78C0</color>
     <color name="accent">#448AFF</color>
-    <color name="white">#FFFFFF</color>
     <color name="red">#EA362A</color>
     <color name="darker_red">#BD1D13</color>
     <color name="semi_transparent_white">#80FFFFFF</color>
     <color name="transparent_black">#4D000000</color>
     <color name="transparent_grey">#4DCCCCCC</color>
     <color name="light_blue">#B0E9EB</color>
+
+    <color name="colorPrimary">#E1E1E1</color>
+    <color name="colorPrimaryDark">#575757</color>
+    <color name="colorAccent">#717171</color>
+
+    <color name="fui_transparent">#00000000</color>
+
+    <color name="colorUnknown">#565656</color>
+    <color name="colorConnecting">#565656</color>
+    <color name="colorMatching">#4094CC</color>
+    <color name="colorFailed">#ED3437</color>
+    <color name="colorConnected">#40b633</color>
+
+    <color name="palette_red">#FB1F05</color>
+    <color name="palette_green">#657725</color>
+    <color name="yellow">#FDD470</color>
+
+    <color name="colorPrimaryAlpha">#663F51B5</color>
+
+    <color name="semi_white">#66FFFFFF</color>
+
+    <color name="black">#000000</color>
+    <color name="grey">#717171</color>
+    <color name="grey_transparent">#33717171</color>
+    <color name="dark_grey">#2B343B</color>
+    <color name="orange">#F0E6DE</color>
+    <color name="green">#49A446</color>
+    <color name="lightGreen">#D8F0DC</color>
+    <color name="white">#FFFFFF</color>
 </resources>

@@ -19,11 +19,22 @@
         <activity
             android:name="co.netguru.android.chatandroll.feature.main.MainActivity"
             android:theme="@style/SplashTheme">
+        </activity>
+
+        <activity android:name=".feature.entry.EntryActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".feature.login.LoginActivity" />
+        <activity android:name=".feature.error.ErrorActivity" />
+        <activity android:name=".feature.editcontact.EditContactActivity" />
+        <activity android:name=".feature.verification.VerificationActivity" />
+        <activity android:name=".feature.hangup.HangUpActivity"/>
+
         <service
             android:name="co.netguru.android.chatandroll.webrtc.service.WebRtcService"
             android:enabled="true"/>
