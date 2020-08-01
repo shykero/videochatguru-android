@@ -3,10 +3,13 @@ package co.netguru.android.chatandroll.app
 import android.app.Application
 import android.content.Context
 import android.content.res.Resources
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import co.netguru.android.chatandroll.data.firebase.FirebaseIceCandidates
 import co.netguru.android.chatandroll.data.firebase.FirebaseIceServers
 import co.netguru.android.chatandroll.data.firebase.FirebaseSignalingAnswers
 import co.netguru.android.chatandroll.data.firebase.FirebaseSignalingOffers
+import co.netguru.android.chatandroll.data.room.AppDatabase
 import co.netguru.android.chatandroll.webrtc.service.WebRtcServiceController
 import co.netguru.videochatguru.WebRtcClient
 import dagger.Module
@@ -38,5 +41,13 @@ class ApplicationModule(private val application: Application) {
         return WebRtcServiceController(
                 webRtcClient, firebaseSignalingAnswers, firebaseSignalingOffers,
                 firebaseIceCandidates, firebaseIceServers)
+    }
+
+    @Provides
+    fun provideRoomDatabase(applicationContext: Context): RoomDatabase{
+        return Room.databaseBuilder(
+                applicationContext,
+                AppDatabase::class.java, "videofon-db"
+        ).build()
     }
 }

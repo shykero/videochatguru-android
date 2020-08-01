@@ -1,4 +1,4 @@
-package co.netguru.android.chatandroll.feature.main.video
+package co.netguru.android.chatandroll.feature.call
 
 import co.netguru.android.chatandroll.common.util.RxUtils
 import co.netguru.android.chatandroll.data.firebase.FirebaseSignalingDisconnect
@@ -14,7 +14,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-class VideoFragmentPresenter @Inject constructor(
+class VideoCallFragmentPresenter @Inject constructor(
         private val firebaseSignalingOnline: FirebaseSignalingOnline,
         private val firebaseSignalingDisconnect: FirebaseSignalingDisconnect
 ) : BasePresenter<VideoFragmentView>() {
@@ -38,7 +38,12 @@ class VideoFragmentPresenter @Inject constructor(
                         onSuccess = {
                             Timber.d("Next $it")
                             getView()?.showCamViews()
-                            getView()?.connectTo(it)
+                            if (userId!=null){
+                                getView()?.connectTo(userId)
+                            } else {
+                                getView()?.connectTo(it)
+                            }
+
                         },
                         onError = {
                             Timber.e(it, "Error while choosing random")
@@ -50,6 +55,7 @@ class VideoFragmentPresenter @Inject constructor(
                             getView()?.showNoOneAvailable()
                         }
                 )
+
     }
 
     fun listenForDisconnectOrders() {
@@ -100,6 +106,7 @@ class VideoFragmentPresenter @Inject constructor(
         } else {
             disconnect()
         }
+
     }
 
     fun connectionStateChange(iceConnectionState: PeerConnection.IceConnectionState) {

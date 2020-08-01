@@ -1,15 +1,23 @@
 package co.netguru.android.chatandroll.feature.verification
 
+import android.Manifest
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import co.netguru.android.chatandroll.R
+import co.netguru.android.chatandroll.app.App
+import co.netguru.android.chatandroll.common.extension.areAllPermissionsGranted
 import co.netguru.android.chatandroll.data.firebase.FirebaseData
+import co.netguru.android.chatandroll.feature.call.VideoCallFragment
 import co.netguru.android.chatandroll.feature.userlist.UsersListActivity
+import co.netguru.android.chatandroll.webrtc.service.WebRtcService
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -25,6 +33,12 @@ class VerificationActivity : AppCompatActivity() {
     var mCallback: PhoneAuthProvider.OnVerificationStateChangedCallbacks? = null
 
     var verificationCode: String? = null
+
+
+    private val KEY_IN_CHAT = "key:in_chat"
+    private val CHECK_PERMISSIONS_AND_CONNECT_REQUEST_CODE = 1
+    private val NECESSARY_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+    private val CONNECT_BUTTON_ANIMATION_DURATION_MS = 500L
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,6 +166,7 @@ class VerificationActivity : AppCompatActivity() {
 
         usersRef.setValue(hashMap).addOnCompleteListener {
             if (it.isSuccessful){
+                App.CURRENT_DEVICE_UUID = user.phoneNumber.toString()
                 openUsersListActivity()
                 finish()
             } else {

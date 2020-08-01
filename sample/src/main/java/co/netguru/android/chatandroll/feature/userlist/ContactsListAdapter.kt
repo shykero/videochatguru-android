@@ -10,12 +10,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import co.netguru.android.chatandroll.R
 import co.netguru.android.chatandroll.data.firebase.ContactData
+import co.netguru.android.chatandroll.data.room.Contact
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import de.hdodenhof.circleimageview.CircleImageView
 
 class ContactsListAdapter(
         val context: Context,
-        private val contactsList: ArrayList<Pair<String, ContactData>>,
+        private val contactsList: MutableList<Contact>,
         private val listener: IListener): RecyclerView.Adapter<ContactsListAdapter.ContactsViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactsViewHolder {
@@ -30,27 +32,34 @@ class ContactsListAdapter(
 
     override fun onBindViewHolder(holder: ContactsViewHolder, position: Int) {
         val contactDataPair = contactsList[position]
-        holder.firstName.text = contactDataPair.second.firstname
-        holder.surname.text = contactDataPair.second.surname
+        holder.firstName.text = contactDataPair.firstName
+        holder.surname.text = contactDataPair.lastName
         holder.editButton.setOnClickListener {
-            listener.onEditIconClicked(position, contactDataPair.second.userId!!)
+            listener.onEditIconClicked(position, contactDataPair.uid.toString())
         }
 
         holder.mainLayout.setOnClickListener {
-            listener.onContactItemClicked(position, contactDataPair.first, contactDataPair.second)
+            listener.onContactItemClicked(position, contactDataPair.uid.toString(), contactDataPair)
         }
 
-        val url = contactsList[position].second.profileImageUrl
-        if (url == null || url == "default" || url == "null"){
+        holder.profileImage.setOnClickListener {
+            listener.onContactItemClicked(position, contactDataPair.uid.toString(), contactDataPair)
+        }
+
+        val url = contactsList[position].profileImageUrl
+        if (url == null || url.isEmpty() || url == "default" || url == "null"){
         } else {
-            Glide.with(context).load(url).into(holder.profileImage)
+            Glide.with(context)
+                    .load(url)
+                    .override(85, 85)
+                    .into(holder.profileImage)
         }
 //        holder.profileImage.setImageURI(contactsList[position].second.profileImageUrl)
 //        holder.profileImage = contactsList[position].second.surname
     }
 
-    fun add (pair: Pair<String, ContactData>){
-        contactsList.add(pair)
+    fun add (contact: Contact){
+        contactsList.add(contact)
     }
 
     fun clear (){
@@ -69,6 +78,6 @@ class ContactsListAdapter(
 
     interface IListener{
         fun onEditIconClicked(position: Int, userId: String)
-        fun onContactItemClicked(position: Int, userId: String, contact: ContactData)
+        fun onContactItemClicked(position: Int, userId: String, contact: Contact)
     }
 }

@@ -26,7 +26,7 @@ class App : Application() {
 
         val BACKGROUND_WORK_NOTIFICATIONS_CHANNEL_ID = "background_channel"
 
-        val CURRENT_DEVICE_UUID = UUID.randomUUID().toString()
+        var CURRENT_DEVICE_UUID = UUID.randomUUID().toString()
 
         fun get(context: Context): App = context.applicationContext as App
 
@@ -56,7 +56,7 @@ class App : Application() {
             //Enables WebRTC Logging
             enableWebRtcLogs(true)
             enableInternalWebRtclogs(Logging.Severity.LS_INFO)
-            Toast.makeText(this, "Uuid: ${App.CURRENT_DEVICE_UUID}", Toast.LENGTH_LONG).show()
+//            Toast.makeText(this, "Uuid: ${App.CURRENT_DEVICE_UUID}", Toast.LENGTH_LONG).show()
         } else {
             disableWebRtcLogs()
         }

@@ -48,4 +48,9 @@
         <item name="android:textOn">""</item>
         <item name="android:background">?selectableItemBackgroundBorderless</item>
     </style>
+
+    <style name="CallDialogTheme">
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

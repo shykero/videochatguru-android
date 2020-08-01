@@ -11,7 +11,8 @@ import co.netguru.android.chatandroll.R
 import co.netguru.android.chatandroll.app.App
 import co.netguru.android.chatandroll.common.extension.getColorCompat
 import co.netguru.android.chatandroll.feature.base.service.BaseServiceWithFacade
-import co.netguru.android.chatandroll.feature.main.MainActivity
+import co.netguru.android.chatandroll.feature.call.CallActivity
+import org.webrtc.SessionDescription
 import org.webrtc.SurfaceViewRenderer
 import timber.log.Timber
 import javax.inject.Inject
@@ -73,6 +74,10 @@ class WebRtcService : BaseServiceWithFacade<WebRtcServiceFacade, WebRtcServiceCo
         webRtcServiceController.attachRemoteView(remoteView)
     }
 
+    fun handleRemoteOffer(remoteUuid: String?, sessionDescription: SessionDescription){
+        webRtcServiceController.handleRemoteOffer(remoteUuid, sessionDescription)
+    }
+
     fun attachLocalView(localView: SurfaceViewRenderer) {
         webRtcServiceController.attachLocalView(localView)
     }
@@ -98,7 +103,7 @@ class WebRtcService : BaseServiceWithFacade<WebRtcServiceFacade, WebRtcServiceCo
     fun isMicrophoneEnabled() = webRtcServiceController.isMicrophoneEnabled()
 
     fun showBackgroundWorkWarning() {
-        val mainActivityIntent = Intent(this, MainActivity::class.java).apply {
+        val mainActivityIntent = Intent(this, CallActivity::class.java).apply {
             action = Intent.ACTION_MAIN
             addCategory(Intent.CATEGORY_LAUNCHER)
         }

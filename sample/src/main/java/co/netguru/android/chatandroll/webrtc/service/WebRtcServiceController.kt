@@ -209,16 +209,23 @@ class WebRtcServiceController @Inject constructor(
         disposables += firebaseSignalingOffers.listenForNewOffersWithUuid()
                 .compose(RxUtils.applyFlowableIoSchedulers())
                 .subscribeBy(
-                        onNext = { (sessionDescription, remoteUuid) ->
-                            this.remoteUuid = remoteUuid
-                            listenForIceCandidates(remoteUuid)
-                            webRtcClient.handleRemoteOffer(sessionDescription)
+                        onNext = {
+                            (sessionDescription, remoteUuid) ->
+                            serviceListener?.handleRemoteOffer(sessionDescription, remoteUuid)
+//                            handleRemoteOffer(remoteUuid, sessionDescription)
                         },
                         onError = {
                             handleCriticalException(it)
                         }
                 )
     }
+
+    fun handleRemoteOffer(remoteUuid: String?, sessionDescription: SessionDescription) {
+        this.remoteUuid = remoteUuid
+        listenForIceCandidates(remoteUuid!!)
+        webRtcClient.handleRemoteOffer(sessionDescription)
+    }
+
 
     private fun sendAnswer(localDescription: SessionDescription) {
         disposables += firebaseSignalingAnswers.create(

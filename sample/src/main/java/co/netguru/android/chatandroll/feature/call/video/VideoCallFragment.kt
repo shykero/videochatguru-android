@@ -1,7 +1,8 @@
-package co.netguru.android.chatandroll.feature.main.video
+package co.netguru.android.chatandroll.feature.call
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.ServiceConnection
@@ -9,29 +10,50 @@ import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.os.Bundle
 import android.os.IBinder
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import com.google.android.material.snackbar.Snackbar
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
+import android.widget.Toast
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import co.netguru.android.chatandroll.R
 import co.netguru.android.chatandroll.app.App
 import co.netguru.android.chatandroll.common.extension.areAllPermissionsGranted
 import co.netguru.android.chatandroll.common.extension.startAppSettings
+import co.netguru.android.chatandroll.common.util.CallEvent
+import co.netguru.android.chatandroll.common.util.createHangUpCallDialog
 import co.netguru.android.chatandroll.feature.base.BaseMvpFragment
+import co.netguru.android.chatandroll.feature.call.VideoCallFragment.Companion.newInstance
 import co.netguru.android.chatandroll.webrtc.service.WebRtcService
 import co.netguru.android.chatandroll.webrtc.service.WebRtcServiceListener
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_hang_up.view.*
 import kotlinx.android.synthetic.main.fragment_video.*
 import org.webrtc.PeerConnection
 import org.webrtc.SessionDescription
 import timber.log.Timber
 
 
-class VideoFragment : BaseMvpFragment<VideoFragmentView, VideoFragmentPresenter>(), VideoFragmentView, WebRtcServiceListener {
+class VideoCallFragment : BaseMvpFragment<VideoFragmentView, VideoCallFragmentPresenter>(), VideoFragmentView, WebRtcServiceListener {
 
     companion object {
-        val TAG: String = VideoFragment::class.java.name
+        val TAG: String = VideoCallFragment::class.java.name
 
-        fun newInstance() = VideoFragment()
+        fun newInstance(isOffer: Boolean, userId: String, firstname: String?= "", surname: String? = "", profileImageUrl: String? = null): VideoCallFragment {
+            val instance = VideoCallFragment()
+            val bundle = Bundle().apply {
+                putString("userId", userId)
+                putString("firstname", firstname)
+                putString("surname", surname)
+                putString("profileImageUrl", profileImageUrl)
+                putBoolean("isOffer", isOffer)
+            }
+            instance.arguments = bundle
+            return instance
+        }
 
         private const val KEY_IN_CHAT = "key:in_chat"
         private const val CHECK_PERMISSIONS_AND_CONNECT_REQUEST_CODE = 1
@@ -39,22 +61,50 @@ class VideoFragment : BaseMvpFragment<VideoFragmentView, VideoFragmentPresenter>
         private const val CONNECT_BUTTON_ANIMATION_DURATION_MS = 500L
     }
 
+    private var mRemoteUuid: String? = null
+    private var mSessionDescription: SessionDescription? = null
     private lateinit var serviceConnection: ServiceConnection
 
     override fun getLayoutId() = R.layout.fragment_video
 
-    override fun retrievePresenter() = App.getApplicationComponent(requireActivity()).videoFragmentComponent().videoFragmentPresenter()
+    override fun retrievePresenter() = App.getApplicationComponent(requireActivity()).videoCallFragmentComponent().videoCallFragmentPresenter()
 
     var service: WebRtcService? = null
+
+    var callDialog: Dialog? = null
+
+    var isOffer: Boolean = false
+    var userId: String? = null
+    var firstname: String?= ""
+    var surname: String? = ""
+    var profileImageUrl: String? = null
 
     override val remoteUuid
         get() = service?.getRemoteUuid()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (buttonPanel.layoutParams as CoordinatorLayout.LayoutParams).behavior = MoveUpBehavior()
-        (localVideoView.layoutParams as CoordinatorLayout.LayoutParams).behavior = MoveUpBehavior()
+        (buttonPanel.layoutParams as CoordinatorLayout.LayoutParams).behavior = MoveUpCallBehavior()
+        (localVideoView.layoutParams as CoordinatorLayout.LayoutParams).behavior = MoveUpCallBehavior()
         activity?.volumeControlStream = AudioManager.STREAM_VOICE_CALL
+
+        arguments?.let {
+            userId = it.getString("userId")
+            firstname = it.getString("firstname")
+            surname = it.getString("surname")
+            profileImageUrl = it.getString("profileImageUrl")
+            isOffer = it.getBoolean("isOffer")
+        }
+
+        if (isOffer){
+            connectTo(userId!!)
+            showCallDialog()
+//            showDialog()
+            checkPermissionsAndConnect()
+        } else {
+
+            //TODO listen for connection
+        }
 
         if (savedInstanceState?.getBoolean(KEY_IN_CHAT) == true) {
             initAlreadyRunningConnection()
@@ -130,7 +180,7 @@ class VideoFragment : BaseMvpFragment<VideoFragmentView, VideoFragmentPresenter>
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                 onWebRtcServiceConnected((iBinder as (WebRtcService.LocalBinder)).service)
-                getPresenter().startRoulette(null)
+                getPresenter().startRoulette(userId)
             }
 
             override fun onServiceDisconnected(componentName: ComponentName) {
@@ -152,11 +202,11 @@ class VideoFragment : BaseMvpFragment<VideoFragmentView, VideoFragmentPresenter>
     }
 
     override fun handleRemoteOffer(sessionDescription: SessionDescription, remoteUuid: String?) {
-        service?.handleRemoteOffer(remoteUuid, sessionDescription)
-    }
-
-    override fun showDialog() {
-
+        Timber.i("handleRemoteOffer: $remoteUuid")
+        mSessionDescription = sessionDescription
+        mRemoteUuid = remoteUuid
+        showDialog()
+//        service?.handleRemoteOffer(remoteUuid, sessionDescription)
     }
 
     override fun connectTo(uuid: String) {
@@ -295,5 +345,47 @@ class VideoFragment : BaseMvpFragment<VideoFragmentView, VideoFragmentPresenter>
 
     private fun onWebRtcServiceDisconnected() {
         Timber.d("Service disconnected")
+    }
+
+    override fun showDialog() {
+        Timber.d("Service disconnected")
+    }
+
+    fun showHangUpDialog() {
+
+        //TODO CREATE CUSTOM DIALOG (HANG UP CALL)
+
+        callDialog = createHangUpCallDialog(requireActivity()){newValue ->
+            when (newValue) {
+                CallEvent.HangUpClickedEvent -> {
+                    callDialog?.dismiss()
+                    service?.handleRemoteOffer(mRemoteUuid, mSessionDescription!!)
+                }
+                CallEvent.HangDownClickedEvent -> {
+                    callDialog?.dismiss()
+                    getPresenter().disconnectByUser()
+                }
+            }
+        }
+        callDialog?.show()
+    }
+
+    fun showCallDialog() {
+
+        //TODO CREATE CUSTOM DIALOG (HANG UP CALL)
+
+        callDialog = createHangUpCallDialog(requireActivity()){newValue ->
+            when (newValue) {
+                CallEvent.HangUpClickedEvent -> {
+                    callDialog?.dismiss()
+                    service?.handleRemoteOffer(mRemoteUuid, mSessionDescription!!)
+                }
+                CallEvent.HangDownClickedEvent -> {
+                    callDialog?.dismiss()
+                    getPresenter().disconnectByUser()
+                }
+            }
+        }
+        callDialog?.show()
     }
 }

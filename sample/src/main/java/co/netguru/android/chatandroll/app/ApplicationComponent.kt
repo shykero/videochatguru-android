@@ -1,6 +1,7 @@
 package co.netguru.android.chatandroll.app
 
 import co.netguru.android.chatandroll.data.firebase.FirebaseModule
+import co.netguru.android.chatandroll.feature.call.VideoCallFragmentComponent
 import co.netguru.android.chatandroll.feature.main.video.VideoFragmentComponent
 import co.netguru.android.chatandroll.webrtc.service.WebRtcServiceComponent
 import dagger.Component
@@ -11,6 +12,8 @@ import javax.inject.Singleton
 interface ApplicationComponent {
 
     fun videoFragmentComponent(): VideoFragmentComponent
+
+    fun videoCallFragmentComponent(): VideoCallFragmentComponent
 
     fun webRtcServiceComponent(): WebRtcServiceComponent
 }

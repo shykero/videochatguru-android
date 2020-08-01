@@ -31,6 +31,10 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude 'META-INF/proguard/coroutines.pro'
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -45,12 +49,16 @@ dependencies {
     implementation libs.design
 
     implementation libs.dagger
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt proc.dagger
     compileOnly proc.javaxAnnotation
 
     implementation libs.rxJava2
     implementation libs.rxAndroid2
     implementation libs.rxKotlin2
+
+    implementation libs.room
+    annotationProcessor proc.roomProcessor
 
     debugImplementation libs.leakCanary
     releaseImplementation libs.leakCanaryNoOp
@@ -69,6 +77,20 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
+    // Room components
+    implementation "androidx.room:room-runtime:$versions.roomVersion"
+    kapt "androidx.room:room-compiler:$versions.roomVersion"
+    implementation "androidx.room:room-ktx:$versions.roomVersion"
+    androidTestImplementation "androidx.room:room-testing:$versions.roomVersion"
+
+// Lifecycle components
+    implementation "androidx.lifecycle:lifecycle-extensions:$versions.archLifecycleVersion"
+    kapt "androidx.lifecycle:lifecycle-compiler:$versions.archLifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.archLifecycleVersion"
+
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutines"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
 
 
     testImplementation test.junit

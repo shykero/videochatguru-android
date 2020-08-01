@@ -1,6 +1,7 @@
 package co.netguru.android.chatandroll.webrtc.service
 
 import org.webrtc.PeerConnection
+import org.webrtc.SessionDescription
 
 
 interface WebRtcServiceListener {
@@ -11,4 +12,7 @@ interface WebRtcServiceListener {
     fun criticalWebRTCServiceException(throwable: Throwable)
 
     fun connectionStateChange(iceConnectionState: PeerConnection.IceConnectionState)
+
+    fun handleRemoteOffer(sessionDescription: SessionDescription, remoteUuid: String?)
+    fun showDialog()
 }

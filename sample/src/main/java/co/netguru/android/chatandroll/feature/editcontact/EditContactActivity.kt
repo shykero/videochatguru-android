@@ -1,16 +1,23 @@
 package co.netguru.android.chatandroll.feature.editcontact
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.Selection
+import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import co.netguru.android.chatandroll.R
 import co.netguru.android.chatandroll.data.firebase.ContactData
 import co.netguru.android.chatandroll.data.firebase.FirebaseData
+import co.netguru.android.chatandroll.data.room.Contact
+import co.netguru.android.chatandroll.feature.userlist.ContactsListViewModel
 import com.bumptech.glide.Glide
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -18,6 +25,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_edit_contact.*
 import java.io.IOException
 import java.lang.Exception
@@ -31,62 +39,33 @@ class EditContactActivity : AppCompatActivity() {
 
     var userId: String? = null
 
-    var storage: FirebaseStorage? = null
-    var storageReference: StorageReference? = null
-    var downloadUri: Uri? = null
+//    var storage: FirebaseStorage? = null
+//    var storageReference: StorageReference? = null
+    var downloadUri: String? = null
+
+    private lateinit var contactsViewModel: EditContactViewModel
+
+    private val disposables = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_contact)
 
+        contactsViewModel = ViewModelProvider(this).get(EditContactViewModel::class.java)
+
         userId = intent.getStringExtra("userId")
 
-//        val usersRef = FirebaseData.database.getReference("users").child(userId)
-
-        var usersRef = if (userId!=null){
-            FirebaseData.database.getReference("users/${FirebaseData.myID}/contacts/$userId")
-        } else {
-            FirebaseData.database.getReference("users/${FirebaseData.myID}/contacts")
+        if (userId != null){
+            contactsViewModel.findContactById(userId!!).observe(this, androidx.lifecycle.Observer {
+                fillUserDetails(it)
+            })
         }
-
-        storage = FirebaseStorage.getInstance();
-        storageReference = storage!!.reference;
-//        val usersRef = FirebaseData.database.getReference("users").child(userId)
-
-        usersRef.addValueEventListener(object: ValueEventListener {
-            override fun onCancelled(p0: DatabaseError?) {
-
-            }
-
-            override fun onDataChange(p0: DataSnapshot?) {
-                val user = p0!!.getValue(ContactData::class.java)
-                user?.let {
-                    userName.setText(user.firstname)
-                    surname.setText(user.surname)
-                    phoneNumber.setText(user.phoneNumber)
-                }
-                if (user != null){
-                    val url = user.profileImageUrl
-                    if (url == null || url == "default" || url == "null"){
-                        profileImage.setImageResource(R.drawable.ic_user_bg_dark)
-                        changeImageText.visibility = View.VISIBLE
-                    } else {
-                        changeImageText.visibility = View.GONE
-                        try {
-                            Glide.with(this@EditContactActivity).load(url).into(profileImage)
-                        } catch (e: Exception){
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            }
-        })
 
         deleteButton.setOnClickListener {
             if (userId != null){
-                val contactsRef = FirebaseData.database.getReference("users/${FirebaseData.myID}/contacts/$userId")
-                contactsRef.removeValue()
-                finish()
+                contactsViewModel.deleteContact(userId!!).subscribe {
+                    finish()
+                }
             } else {
                 finish()
             }
@@ -99,49 +78,80 @@ class EditContactActivity : AppCompatActivity() {
         profileImage.setOnClickListener {
             chooseImage()
         }
-    }
 
-    private fun saveUserToDatabase() {
-        val usersRef: DatabaseReference
-
-        if (userId != null) {
-            usersRef = FirebaseData.database.getReference("users/${FirebaseData.myID}/contacts").child(userId)
-        } else {
-            usersRef = FirebaseData.database.getReference("users/${FirebaseData.myID}/contacts").push()
-        }
-
-            val hashMap = HashMap<String, Any>().apply {
-                put("firstname", userName.text.toString())
-                put("surname", surname.text.toString())
-                put("phoneNumber", phoneNumber.text.toString())
-                put("userId", usersRef.key)
-        }
-        if (downloadUri != null){
-            hashMap["profileImageUrl"] = downloadUri.toString()
-        }
-            usersRef.updateChildren(hashMap).addOnCompleteListener {
-                if (it.isSuccessful){
-                    finish()
-                } else {
-                    Toast.makeText(this@EditContactActivity, "Error while registering user", Toast.LENGTH_SHORT).show()
+        phoneNumber.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (!s.toString().contains("+49")) {
+                    phoneNumber.setText("""+49${s.toString()}""");
+                    Selection.setSelection(phoneNumber.text, 3)
                 }
             }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+        })
+    }
+
+    private fun fillUserDetails(contact: Contact?) {
+        contact?.let {
+            userName.setText(contact.firstName)
+            surname.setText(contact.lastName)
+            phoneNumber.setText(contact.phoneNumber)
+
+            val url = contact.profileImageUrl
+            if (url == null || url == "default" || url == "null"){
+                profileImage.setImageResource(R.drawable.ic_user_bg_dark)
+                changeImageText.visibility = View.VISIBLE
+            } else {
+                changeImageText.visibility = View.GONE
+                try {
+                    downloadUri = url
+                    Glide.with(this@EditContactActivity).load(url).into(profileImage)
+                } catch (e: Exception){
+                    e.printStackTrace()
+                }
+            }
+        }
+
+    }
+
+    @SuppressLint("CheckResult")
+    private fun saveUserToDatabase() {
+
+        val firstNameValue = userName.text.toString()
+        val lastNameValue = surname.text.toString()
+        val phoneNumberValue = phoneNumber.text.toString()
+        val profileImageUrlValue = downloadUri
+
+        if (userId != null) {
+            contactsViewModel.update(userId!!, firstNameValue, lastNameValue, phoneNumberValue, profileImageUrlValue).subscribe {
+                finish()
+            }
+        } else {
+            contactsViewModel.insert(Contact(firstName = firstNameValue,
+                    lastName = lastNameValue,
+                    phoneNumber = phoneNumberValue,
+                    profileImageUrl = profileImageUrlValue)).subscribe {
+                finish()
+            }
+        }
     }
 
     private fun uploadImage(filePath: Uri?) {
         if (filePath != null) {
-            val ref = storageReference!!.child("images/" + UUID.randomUUID().toString())
-            ref.putFile(filePath)
-                    .addOnSuccessListener {
-                        downloadUri = it.downloadUrl
-                        if (userId != null){
-                            val userRef = FirebaseData.database.getReference("users/${FirebaseData.myID}/contacts/$userId")
-                            userRef.child("profileImageUrl").setValue(downloadUri.toString())
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        e.printStackTrace()
-                    }
+            downloadUri = filePath.toString()
+
+            try {
+                Glide.with(this@EditContactActivity).load(downloadUri).into(profileImage)
+            } catch (e: Exception){
+                e.printStackTrace()
+            }
         }
     }
 
